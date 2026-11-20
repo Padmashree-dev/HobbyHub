@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="footer-custom">
+    <div class="container">
+        <div class="row g-4 justify-content-between align-items-center">
+            <div class="col-md-5">
+                <a class="navbar-brand mb-2 d-inline-flex" th:href="@{/}">
+                    <div class="brand-icon me-2">
+                        <i class="bi bi-stars"></i>
+                    </div>
+                    <span>Hobby<span class="text-pink">Connect</span></span>
+                </a>
+                <p class="text-secondary small mt-2 mb-0">
+                    A vibrant social mini platform connecting individuals through shared creative passions, sports, gaming, and lifestyle hobbies.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="d-flex flex-wrap justify-content-md-end gap-3 mb-2 small fw-semibold">
+                    <a th:href="@{/}" class="text-secondary text-decoration-none hover-purple">Home</a>
+                    <a th:href="@{/communities}" class="text-secondary text-decoration-none hover-purple">Communities</a>
+                    <a th:href="@{/register}" class="text-secondary text-decoration-none hover-purple" th:if="${session.userId == null}">Sign Up</a>
+                    <a th:href="@{/login}" class="text-secondary text-decoration-none hover-purple" th:if="${session.userId == null}">Log In</a>
+                    <a th:href="@{/friends}" class="text-secondary text-decoration-none hover-purple" th:if="${session.userId != null}">Find Friends</a>
+                    <a th:href="@{/profile}" class="text-secondary text-decoration-none hover-purple" th:if="${session.userId != null}">Profile</a>
+                </div>
+                <p class="text-light small mb-0">
+                    Crafted with <i class="bi bi-heart-fill text-pink"></i> using Spring Boot, MySQL & Bootstrap
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

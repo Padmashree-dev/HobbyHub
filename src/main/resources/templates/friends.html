@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Friends & Hobby Matches – HobbyConnect</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-page">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <!-- Page Title & Subtitle -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+                <span class="badge bg-pink-light text-pink rounded-pill px-3 py-1 fw-semibold small mb-1">
+                    <i class="bi bi-people-fill me-1"></i> Smart Matchmaking
+                </span>
+                <h1 class="fw-bold font-display mb-0">Hobbyists With <span class="text-gradient">Similar Interests</span></h1>
+                <p class="text-secondary small mb-0">Find and connect with fellow enthusiasts who love the exact same hobbies.</p>
+            </div>
+
+            <!-- Change Hobbies Button -->
+            <a th:href="@{/hobbies}" class="btn btn-brand-outline">
+                <i class="bi bi-sliders"></i> Edit My Hobbies
+            </a>
+        </div>
+
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3 mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card-custom p-3 mb-4">
+            <form th:action="@{/friends}" method="GET" class="row g-2 align-items-center">
+                <div class="col-md-auto">
+                    <label class="fw-semibold text-secondary small d-flex align-items-center gap-1">
+                        <i class="bi bi-funnel text-purple"></i> Filter by Hobby:
+                    </label>
+                </div>
+                <div class="col-md-5">
+                    <select name="hobbyId" class="form-select form-select-custom" onchange="this.form.submit()">
+                        <option value="">All Common Interests</option>
+                        <option th:each="h : ${allHobbies}"
+                                th:value="${h.id}"
+                                th:text="${h.name + ' (' + h.category + ')'}"
+                                th:selected="${selectedHobbyId != null && selectedHobbyId == h.id}">
+                            Hobby
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-auto ms-auto" th:if="${selectedFilterHobby != null}">
+                    <a th:href="@{/friends}" class="btn btn-sm btn-outline-secondary rounded-pill">
+                        <i class="bi bi-x-circle"></i> Clear Filter
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Friends / Matches Cards Grid -->
+        <div class="row g-4" th:if="${!matches.isEmpty()}">
+            <div class="col-md-6 col-lg-4" th:each="match : ${matches}">
+                <div class="card-custom p-4 h-100 d-flex flex-column">
+                    <!-- Top row: Avatar, Name, and Match % Badge -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-circle avatar-lg">
+                                <span th:text="${#strings.substring(match.user.fullName, 0, 1).toUpperCase()}">U</span>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">
+                                    <a th:href="@{'/profile/' + ${match.user.username}}" class="text-dark text-decoration-none" th:text="${match.user.fullName}">
+                                        Name
+                                    </a>
+                                </h5>
+                                <span class="text-muted small" th:text="'@' + ${match.user.username}">@username</span>
+                                <div class="text-secondary small mt-1" th:if="${match.user.location != null && !match.user.location.isBlank()}">
+                                    <i class="bi bi-geo-alt-fill text-pink"></i> <span th:text="${match.user.location}">City</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Match % Badge -->
+                        <div class="text-end" th:if="${match.matchPercentage > 0}">
+                            <span class="badge badge-match" th:text="${match.matchPercentage + '% Match'}">80% Match</span>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <p class="text-secondary small mb-3 flex-grow-1"
+                       th:text="${match.user.bio != null && !match.user.bio.isBlank() ? match.user.bio : 'Enthusiastic hobbyist ready to connect and collaborate on shared passions.'}">
+                        Bio
+                    </p>
+
+                    <!-- Common Hobbies Section -->
+                    <div class="mb-3 pt-2 border-top">
+                        <div class="small fw-bold text-pink mb-2 d-flex align-items-center gap-1">
+                            <i class="bi bi-stars"></i> Shared Passions (<span th:text="${match.commonCount}">0</span>):
+                        </div>
+                        <div class="d-flex flex-wrap gap-1" th:if="${!match.commonHobbies.isEmpty()}">
+                            <span class="badge badge-common" th:each="ch : ${match.commonHobbies}">
+                                <i th:class="'bi ' + ${ch.icon}"></i>
+                                <span th:text="${ch.name}">Hobby</span>
+                            </span>
+                        </div>
+                        <div class="text-muted small fst-italic" th:if="${match.commonHobbies.isEmpty()}">
+                            No direct shared hobby selected yet.
+                        </div>
+                    </div>
+
+                    <!-- Other Hobbies -->
+                    <div class="mb-4">
+                        <div class="small fw-semibold text-secondary mb-1">All Interests:</div>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="badge badge-hobby" th:each="h : ${match.user.hobbies}">
+                                <span th:text="${h.name}">Hobby</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2 mt-auto">
+                        <a th:href="@{'/messages?to=' + ${match.user.id}}" class="btn btn-brand btn-sm flex-fill py-2">
+                            <i class="bi bi-chat-dots-fill"></i> Message
+                        </a>
+                        <a th:href="@{'/profile/' + ${match.user.username}}" class="btn btn-brand-outline btn-sm flex-fill py-2">
+                            <i class="bi bi-person"></i> View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State if no matches found -->
+        <div class="card-custom p-5 text-center my-4" th:if="${matches.isEmpty()}">
+            <div class="brand-icon mx-auto mb-3" style="width: 64px; height: 64px; font-size: 2rem;">
+                <i class="bi bi-search-heart"></i>
+            </div>
+            <h3 class="fw-bold mb-2">No Matching Hobbyists Found Yet</h3>
+            <p class="text-secondary col-md-6 mx-auto mb-4">
+                We couldn't find users with that specific filter or your current hobby list. Try adding more hobbies to your profile to expand your matches!
+            </p>
+            <a th:href="@{/hobbies}" class="btn btn-brand px-4 py-2">
+                <i class="bi bi-plus-circle"></i> Select More Hobbies
+            </a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

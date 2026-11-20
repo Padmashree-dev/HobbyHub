@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Hobbies – HobbyConnect</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-page">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="text-center mb-5">
+            <span class="badge bg-pink-light text-pink rounded-pill px-3 py-2 fw-semibold mb-2">
+                <i class="bi bi-heart-pulse-fill me-1"></i> Personalize Your Experience
+            </span>
+            <h1 class="fw-bold font-display">What Are You <span class="text-gradient">Passionate About?</span></h1>
+            <p class="text-secondary lead col-md-8 mx-auto">
+                Select your hobbies below. We'll use these to match you with fellow enthusiasts who share your interests!
+            </p>
+
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white rounded-pill border shadow-sm mt-2">
+                <i class="bi bi-check2-circle text-pink fs-5"></i>
+                <span class="text-secondary small">Selected hobbies: </span>
+                <span id="selected-count-badge" class="badge bg-purple-light text-purple rounded-pill fw-bold fs-6">0</span>
+            </div>
+        </div>
+
+        <!-- Flash alerts -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3 col-lg-8 mx-auto" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show rounded-3 col-lg-8 mx-auto" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            <span th:text="${errorMessage}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Hobby Selection Form -->
+        <form th:action="@{/hobbies}" method="POST">
+            <div class="row g-4 justify-content-center mb-5">
+                <div class="col-6 col-md-4 col-lg-3" th:each="hobby : ${allHobbies}">
+                    <label class="hobby-card-label h-100">
+                        <input type="checkbox" name="hobbyIds" class="hobby-checkbox"
+                               th:value="${hobby.id}"
+                               th:checked="${userHobbyIds.contains(hobby.id)}">
+                        <div class="hobby-card-inner">
+                            <div class="hobby-check-badge">
+                                <i class="bi bi-check-lg"></i>
+                            </div>
+                            <div class="hobby-icon-wrap">
+                                <i th:class="'bi ' + ${hobby.icon}"></i>
+                            </div>
+                            <h6 th:text="${hobby.name}">Hobby Name</h6>
+                            <span class="badge bg-purple-light text-purple rounded-pill small mb-2" th:text="${hobby.category}">Category</span>
+                            <p th:text="${hobby.description}">Description</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Sticky Save Bar -->
+            <div class="text-center sticky-bottom bg-white p-3 rounded-4 shadow-lg border border-purple col-md-6 mx-auto mb-4">
+                <button type="submit" id="save-hobbies-btn" class="btn btn-brand btn-lg px-5">
+                    <i class="bi bi-save2-fill"></i> Save Hobbies & Find Matches
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

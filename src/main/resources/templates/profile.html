@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${profileUser.fullName + ' – HobbyConnect Profile'}">Profile – HobbyConnect</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-page">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show rounded-3 mb-4 col-lg-10 mx-auto" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Profile Header Card -->
+                <div class="card-custom p-4 p-md-5 mb-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-auto">
+                            <div class="avatar-circle avatar-xl">
+                                <span th:text="${#strings.substring(profileUser.fullName, 0, 1).toUpperCase()}">U</span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <h2 class="fw-bold mb-0" th:text="${profileUser.fullName}">Full Name</h2>
+                                <span class="badge bg-purple-light text-purple rounded-pill small" th:text="'@' + ${profileUser.username}">@username</span>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-3 text-secondary small my-2">
+                                <span th:if="${profileUser.location != null && !profileUser.location.isBlank()}">
+                                    <i class="bi bi-geo-alt-fill text-pink"></i> <span th:text="${profileUser.location}">City</span>
+                                </span>
+                                <span>
+                                    <i class="bi bi-calendar-event text-purple"></i> Joined <span th:text="${#temporals.format(profileUser.createdAt, 'MMMM yyyy')}">Date</span>
+                                </span>
+                            </div>
+
+                            <p class="text-secondary mt-2 mb-0"
+                               th:text="${profileUser.bio != null && !profileUser.bio.isBlank() ? profileUser.bio : 'No bio added yet.'}">
+                                User bio details.
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-auto text-md-end">
+                            <div th:if="${isOwnProfile}">
+                                <a th:href="@{/profile/edit}" class="btn btn-brand">
+                                    <i class="bi bi-pencil-square"></i> Edit Profile
+                                </a>
+                                <div class="mt-2">
+                                    <a th:href="@{/hobbies}" class="btn btn-brand-outline btn-sm">
+                                        <i class="bi bi-heart"></i> Manage Hobbies
+                                    </a>
+                                </div>
+                            </div>
+                            <div th:if="${!isOwnProfile && isLoggedIn}">
+                                <div class="mb-2" th:if="${matchPercentage > 0}">
+                                    <span class="badge badge-match fs-6 px-3 py-2" th:text="${matchPercentage + '% Hobby Match'}">80% Match</span>
+                                </div>
+                                <a th:href="@{'/messages?to=' + ${profileUser.id}}" class="btn btn-brand">
+                                    <i class="bi bi-chat-dots-fill"></i> Send Message
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Hobbies Banner (if viewing another user) -->
+                <div class="card-custom p-4 mb-4 border-pink" th:if="${!isOwnProfile && commonHobbies != null && !commonHobbies.isEmpty()}">
+                    <h5 class="fw-bold text-pink mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-stars"></i> Common Interests You Both Share (<span th:text="${commonHobbies.size()}">0</span>)
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge badge-common fs-6" th:each="ch : ${commonHobbies}">
+                            <i th:class="'bi ' + ${ch.icon}"></i>
+                            <span th:text="${ch.name}">Hobby</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Stats Counters -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="hero-stats-card">
+                            <div class="stat-number" th:text="${profileUser.hobbies.size()}">0</div>
+                            <div class="text-secondary small fw-bold text-uppercase mt-1">Hobbies Selected</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="hero-stats-card">
+                            <div class="stat-number" th:text="${joinedCommunities.size()}">0</div>
+                            <div class="text-secondary small fw-bold text-uppercase mt-1">Communities Joined</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Hobbies Section -->
+                <div class="card-custom p-4 p-md-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-heart-fill text-pink"></i> Interests & Passions
+                        </h4>
+                        <a th:href="@{/hobbies}" class="btn btn-sm btn-brand-outline" th:if="${isOwnProfile}">
+                            <i class="bi bi-plus-circle"></i> Update
+                        </a>
+                    </div>
+
+                    <div class="row g-3" th:if="${!profileUser.hobbies.isEmpty()}">
+                        <div class="col-6 col-md-4 col-lg-3" th:each="hobby : ${profileUser.hobbies}">
+                            <div class="card-custom p-3 text-center h-100 bg-light border-0">
+                                <div class="hobby-icon-wrap mx-auto mb-2" style="width: 48px; height: 48px; font-size: 1.4rem;">
+                                    <i th:class="'bi ' + ${hobby.icon}"></i>
+                                </div>
+                                <h6 class="fw-bold mb-1" th:text="${hobby.name}">Hobby</h6>
+                                <span class="badge bg-purple-light text-purple rounded-pill small" th:text="${hobby.category}">Category</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center py-4 text-muted" th:if="${profileUser.hobbies.isEmpty()}">
+                        <i class="bi bi-emoji-neutral fs-2 d-block mb-2"></i>
+                        <p class="mb-0">No hobbies selected yet.</p>
+                        <a th:href="@{/hobbies}" class="btn btn-brand btn-sm mt-3" th:if="${isOwnProfile}">
+                            Choose Hobbies Now
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Joined Communities Section -->
+                <div class="card-custom p-4 p-md-5">
+                    <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill text-purple"></i> Communities (<span th:text="${joinedCommunities.size()}">0</span>)
+                    </h4>
+
+                    <div class="row g-3" th:if="${!joinedCommunities.isEmpty()}">
+                        <div class="col-md-6" th:each="comm : ${joinedCommunities}">
+                            <div class="card-custom p-3 h-100 d-flex align-items-center gap-3">
+                                <div class="brand-icon flex-shrink-0" style="width: 44px; height: 44px; font-size: 1.3rem;">
+                                    <i th:class="'bi ' + ${comm.icon}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-0">
+                                        <a th:href="@{'/communities/' + ${comm.id}}" class="text-dark text-decoration-none hover-purple"
+                                           th:text="${comm.name}">Community Name</a>
+                                    </h6>
+                                    <span class="badge bg-purple-light text-purple rounded-pill small" th:text="${comm.category}">Category</span>
+                                    <span class="text-muted small ms-2" th:text="${comm.members.size() + ' members'}">0 members</span>
+                                </div>
+                                <a th:href="@{'/communities/' + ${comm.id}}" class="btn btn-sm btn-brand-outline rounded-circle p-2 lh-1">
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center py-4 text-muted" th:if="${joinedCommunities.isEmpty()}">
+                        <p class="mb-0">Has not joined any community groups yet.</p>
+                        <a th:href="@{/communities}" class="btn btn-brand btn-sm mt-3" th:if="${isOwnProfile}">
+                            Explore Communities
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

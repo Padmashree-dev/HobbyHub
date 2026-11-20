@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand" th:href="@{/}">
+            <div class="brand-icon">
+                <i class="bi bi-stars"></i>
+            </div>
+            <span>Hobby<span class="text-pink">Connect</span></span>
+        </a>
+
+        <!-- Responsive Mobile Toggle -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-2 text-purple"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">
+                        <i class="bi bi-house-door"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/friends}">
+                        <i class="bi bi-people"></i> Find Friends
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/communities}">
+                        <i class="bi bi-grid-1x2"></i> Communities
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/hobbies}">
+                        <i class="bi bi-heart"></i> My Hobbies
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/messages}">
+                        <i class="bi bi-chat-dots"></i> Messages
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right side user action buttons -->
+            <div class="d-flex align-items-center gap-2">
+                <!-- If logged in -->
+                <div class="dropdown" th:if="${session.userId != null}">
+                    <a href="#" class="d-flex align-items-center gap-2 text-decoration-none dropdown-toggle py-1 px-2 rounded-pill bg-purple-light"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-circle">
+                            <span th:text="${#strings.substring(session.userName != null ? session.userName : 'U', 0, 1).toUpperCase()}">U</span>
+                        </div>
+                        <span class="fw-semibold text-purple pe-2 d-none d-sm-inline" th:text="${session.userName}">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                        <li>
+                            <h6 class="dropdown-header text-muted">
+                                Signed in as <strong th:text="'@' + ${session.userUsername}">@username</strong>
+                            </h6>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center gap-2" th:href="@{/profile}">
+                                <i class="bi bi-person text-purple"></i> My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center gap-2" th:href="@{/profile/edit}">
+                                <i class="bi bi-pencil-square text-purple"></i> Edit Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center gap-2" th:href="@{/hobbies}">
+                                <i class="bi bi-heart text-pink"></i> Change Hobbies
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger" th:href="@{/logout}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- If NOT logged in -->
+                <div class="d-flex gap-2" th:if="${session.userId == null}">
+                    <a th:href="@{/login}" class="btn btn-brand-outline">
+                        <i class="bi bi-box-arrow-in-right"></i> Log In
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-brand">
+                        <i class="bi bi-person-plus"></i> Join Free
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

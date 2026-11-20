@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HobbyConnect – Connect with Hobbyists Who Share Your Passion</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main>
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <span class="badge bg-pink-light text-pink rounded-pill px-3 py-2 fw-semibold mb-3">
+                        <i class="bi bi-sparkles me-1"></i> Discover Your Tribe & Share Your Passions
+                    </span>
+                    <h1 class="display-4 fw-bold font-display mb-3">
+                        Never Pursue Your Favorite <br>
+                        <span class="text-gradient">Hobbies Alone Again</span>
+                    </h1>
+                    <p class="lead text-secondary mb-4 col-md-10 mx-auto">
+                        HobbyConnect is the ultimate platform designed to bring hobbyists together. Whether you love
+                        <strong>Music, Coding, Drawing, Gaming, Photography, Dancing, or Sports</strong>, find your match,
+                        form communities, and build lasting friendships.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+                        <a th:href="${session.userId != null ? '/friends' : '/register'}" class="btn btn-brand btn-lg px-4 py-3">
+                            <i class="bi bi-lightning-charge-fill"></i> Get Started Free
+                        </a>
+                        <a th:href="@{/communities}" class="btn btn-brand-outline btn-lg px-4 py-3">
+                            <i class="bi bi-compass"></i> Explore Communities
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row g-3 justify-content-center col-lg-10 mx-auto">
+                <div class="col-6 col-md-4">
+                    <div class="hero-stats-card">
+                        <div class="stat-number" th:text="${totalUsers}">100+</div>
+                        <div class="text-secondary small fw-bold text-uppercase mt-1">Active Hobbyists</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="hero-stats-card">
+                        <div class="stat-number" th:text="${totalHobbies}">12+</div>
+                        <div class="text-secondary small fw-bold text-uppercase mt-1">Hobby Categories</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="hero-stats-card">
+                        <div class="stat-number" th:text="${totalCommunities}">25+</div>
+                        <div class="text-secondary small fw-bold text-uppercase mt-1">Vibrant Clubs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Hobbies Showcase -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="text-pink fw-bold text-uppercase tracking-wider small">Explore Passions</span>
+                <h2 class="fw-bold mt-1">Popular Hobbies on HobbyConnect</h2>
+                <p class="text-secondary">Pick what excites you and connect with like-minded creators and enthusiasts.</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-6 col-md-4 col-lg-3" th:each="hobby : ${hobbies}">
+                    <div class="card-custom p-4 text-center h-100">
+                        <div class="hobby-icon-wrap mx-auto">
+                            <i th:class="'bi ' + ${hobby.icon}"></i>
+                        </div>
+                        <h5 class="fw-bold mb-1" th:text="${hobby.name}">Hobby</h5>
+                        <span class="badge bg-purple-light text-purple rounded-pill small mb-2" th:text="${hobby.category}">Category</span>
+                        <p class="text-secondary small mb-3" th:text="${hobby.description}">Description</p>
+                        <a th:href="${session.userId != null ? '/friends?hobbyId=' + hobby.id : '/register'}"
+                           class="btn btn-sm btn-brand-outline w-100 mt-auto">
+                            Find Partners <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="text-pink fw-bold text-uppercase tracking-wider small">Why HobbyConnect</span>
+                <h2 class="fw-bold mt-1">Everything You Need to Connect</h2>
+                <p class="text-secondary">Designed with passion, powered by intelligent matching and social engagement.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-custom p-4 h-100">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-magic"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Smart Hobby Matching</h4>
+                        <p class="text-secondary">
+                            Our matching algorithm analyzes your selected interests and shows hobbyists with common ground, ranked by match percentage.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-custom p-4 h-100">
+                        <div class="brand-icon mb-3" style="background: linear-gradient(135deg, #f72585 0%, #7209b7 100%);">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Hobby Communities</h4>
+                        <p class="text-secondary">
+                            Create your own hobby club or join existing groups. Share thoughts, exchange tips, and collaborate on exciting projects.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-custom p-4 h-100">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-chat-heart-fill"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2">Direct Messaging</h4>
+                        <p class="text-secondary">
+                            Found someone who loves the same synthwave tracks or badminton weekends? Jump into a private chat and connect instantly.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Communities Preview -->
+    <section class="py-5 bg-white" th:if="${!popularCommunities.isEmpty()}">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <span class="text-pink fw-bold text-uppercase tracking-wider small">Trending Hubs</span>
+                    <h2 class="fw-bold mt-1 mb-0">Active Communities</h2>
+                </div>
+                <a th:href="@{/communities}" class="btn btn-brand-outline">
+                    View All Communities <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4" th:each="comm : ${popularCommunities}">
+                    <div class="card-custom p-4 h-100 d-flex flex-column">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="brand-icon">
+                                <i th:class="'bi ' + ${comm.icon}"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0" th:text="${comm.name}">Community Name</h5>
+                                <span class="badge bg-purple-light text-purple rounded-pill small" th:text="${comm.category}">Category</span>
+                            </div>
+                        </div>
+                        <p class="text-secondary small mb-4 flex-grow-1" th:text="${comm.description}">Description</p>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <span class="text-muted small">
+                                <i class="bi bi-people me-1"></i> <strong th:text="${comm.members.size()}">0</strong> members
+                            </span>
+                            <a th:href="@{'/communities/' + ${comm.id}}" class="btn btn-sm btn-brand">
+                                Visit Group <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="py-5">
+        <div class="container">
+            <div class="card-custom card-header-gradient p-5 text-center text-white rounded-4 shadow-lg">
+                <h2 class="display-6 fw-bold mb-3">Ready to Connect with Fellow Hobbyists?</h2>
+                <p class="lead mb-4 mx-auto col-md-8 text-white-50">
+                    Join thousands of hobbyists sharing their creative passions and hobbies across the globe.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a th:href="${session.userId != null ? '/friends' : '/register'}" class="btn btn-light text-purple fw-bold px-4 py-3 rounded-pill shadow">
+                        <i class="bi bi-person-check-fill me-1"></i> Join HobbyConnect Today
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
